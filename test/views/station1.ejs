@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<link rel='stylesheet' href="/css/style.css" />
+<head>
+  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="/bower_components/bootstrap-toggle/css/bootstrap-toggle.min.css">
+
+
+
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <title> STATION 1</title>
+    <style> /* set the CSS */
+
+        body { font: 20px Arial;}
+
+        path { 
+            stroke: steelblue;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: grey;
+            stroke-width: 1;
+            shape-rendering: crispEdges;
+        }
+
+        td, th {
+            padding: 1px 4px;
+            border: 1px black solid;
+        }
+
+    </style>
+</head>
+<!-- load the d3.js library -->     
+<!--   <script src="javascript/d3.min.js"></script>
+    <script src="https://d3js.org/d3-time-format.v2.min.js"></script> -->
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <body style="margin-top: 100px; min-height: 400px;">
+      <%- include header.ejs %>
+      <div style="text-align: center;">
+        <h1>STATION 1</h1>
+        <p><u>Decription</u>: STATION DEMO 1 at HCM City</p>
+      </div>
+      
+      <div class="container">
+        <div class="row"> 
+          <div class="col-lg-9">
+            <div id="chart"> </div>
+            <div id="table"> </div>
+          </div>
+          <div class="col-lg-3">
+              <% if(isLogin) {%>
+
+                <div style="padding: 8px 8px 8px 8px; background-color: #dadaed; text-align: center;">
+                  <lable> Control table </lable>
+                  <br />  
+                  <div class="input-group" style="width: 50%; float: left;">
+                    <span class="input-group-addon" id="basic-addon1">Mode</span>
+
+                    <select class="form-control" id="sel1">
+                      <option>1</option>
+                      <option>2</option>
+                    </select>
+                  </div>     
+                  <input style="margin: 5px 5px 5px 5px;" type="checkbox" checked data-toggle="toggle" />
+                </div>
+                
+
+
+              <% } %>
+          </div>
+        </div>
+
+      </div>
+     
+      <%- include footer.ejs %>
+    </body>
+<script>
+
+// Set the dimensions of the canvas / graph
+var margin = {top: 100, right: 30, bottom: 70, left: 120},
+width = 1000 - margin.left - margin.right,
+height = 560 - margin.top - margin.bottom;
+
+// Parse the time / time
+var parsetime = d3.time.format("%m/%d/%Y, %H:%M:%S %p").parse;
+
+// Set the ranges
+var x = d3.time.scale().range([0, width]);
+var y = d3.scale.linear().range([height, 0]);
+
+// Define the axes
+var xAxis = d3.svg.axis().scale(x)
+.orient("bottom").ticks(10).tickFormat(d3.time.format("%H:%M:%S"));
+
+var yAxis = d3.svg.axis().scale(y)
+.orient("left").ticks(10);
+
+// Define the line
+var valueline = d3.svg.line()
+.x(function(d) { return x(d.time); })
+.y(function(d) { return y(d.value); });
+
+// Adds the svg canvas
+var svg = d3.select("#chart")
+.append("svg")
+.attr("id", 'svg')
+.attr("width", '100%')
+.attr("height", height + margin.top + margin.bottom)
+.append("g")
+.attr("transform", 
+  "translate(" + margin.left + "," + margin.top + ")");
+
+// Get the data
+d3.json("http://localhost/getData", function(error, data) {
+    data.forEach(function(d) {
+        console.log(d.time);
+        d.time = parsetime(d.time);    
+        d.value = +d.value;
+    });
+
+    // Scale the range of the data
+    x.domain(d3.extent(data, function(d) { return d.time; }));
+    y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+    // Add the valueline path.
+    svg.append("path")
+    .data([data])
+    .attr("class", "line")
+    .attr("d", valueline(data));
+  // Add the scatterplot
+  svg.selectAll("dot")
+  .data(data)
+  .enter().append("circle")
+  .attr("r", 3)
+  .attr("cx", function(d) { return x(d.time); })
+  .attr("cy", function(d) { return y(d.value); });
+
+    // Add the X Axis
+    svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+    // Add the Y Axis
+    svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+
+// The table generation function
+function tabulate(data, columns) {
+    var table = d3.select("#table").append("table")
+            .attr("align", "center")
+            .style("border-collapse", "collapse")// <= Add this line in
+            .style("border", "2px black solid"), // <= Add this line in
+            thead = table.append("thead"),
+            tbody = table.append("tbody");
+
+    // append the header row
+    thead.append("tr")
+    .selectAll("th")
+    .data(columns)
+    .enter()
+    .append("th")
+    .text(function(column) { return column; });
+
+    // create a row for each object in the data
+    var rows = tbody.selectAll("tr")
+    .data(data)
+    .enter()
+    .append("tr");
+
+    // create a cell in each row for each column
+    var cells = rows.selectAll("td")
+    .data(function(row) {
+        return columns.map(function(column) {
+            return {column: column, value: row[column]};
+        });
+    })
+    .enter()
+    .append("td")
+        .attr("style", "font-family: Courier") // sets the font style
+        .html(function(d) { return d.value; });
+
+        return table;
+    }
+
+// render the table
+var peopleTable = tabulate(data, ["id","time", "value"]);
+
+// peopleTable.selectAll("tbody tr") 
+//         .sort(function(a, b) {
+//                 return d3.descending(a.value, b.value);
+//         });
+
+peopleTable.selectAll("thead th")
+.text(function(column) {
+    return column.charAt(0).toUpperCase()+column.substr(1);
+});
+
+});
+
+</script>
+  <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/bower_components/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io.connect('http://localhost');
+      socket.on('sendData', function (data) {
+        var chart = document.getElementById("chart");
+        chart.removeChild(document.getElementById("svg"));
+        var data = data.data;
+        // Set the dimensions of the canvas / graph
+        var margin = {top: 100, right: 30, bottom: 70, left: 120},
+        width = 1000 - margin.left - margin.right,
+        height = 560 - margin.top - margin.bottom;
+
+        // Parse the time / time
+        var parsetime = d3.time.format("%m/%d/%Y, %H:%M:%S %p").parse;
+
+        // Set the ranges
+        var x = d3.time.scale().range([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+
+        // Define the axes
+        var xAxis = d3.svg.axis().scale(x)
+        .orient("bottom").ticks(10).tickFormat(d3.time.format("%H:%M:%S"));
+
+        var yAxis = d3.svg.axis().scale(y)
+        .orient("left").ticks(10);
+
+        // Define the line
+        var valueline = d3.svg.line()
+        .x(function(d) { return x(d.time); })
+        .y(function(d) { return y(d.value); });
+
+        // Adds the svg canvas
+        var svg = d3.select("#chart")
+        .append("svg")
+        .attr("id", "svg")
+        .attr("width", '100%')
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            data.forEach(function(d) {
+                d.time = parsetime(d.time);    
+                d.value = +d.value;
+            });
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) { return d.time; }));
+            y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+            // Add the valueline path.
+            svg.append("path")
+            .data([data])
+            .attr("class", "line")
+            .attr("d", valueline(data));
+          // Add the scatterplot
+          svg.selectAll("dot")
+          .data(data)
+          .enter().append("circle")
+          .attr("r", 3)
+          .attr("cx", function(d) { return x(d.time); })
+          .attr("cy", function(d) { return y(d.value); });
+
+            // Add the X Axis
+            svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+            // Add the Y Axis
+            svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+       
+      });
+    </script>
+</html>

@@ -1,0 +1,130 @@
+
+ /* Định dạng cho khung viền*/  
+ .boder{
+ border: 2px solid #34b7d8;
+ margin-bottom:15px;
+ border-radius: 5px; 
+}
+ /* Định dạng cho tên trƣờng  */
+ .school{
+ padding: 10px;
+ margin: 5px;
+ text-align:center;
+ font-size:35px;
+ color:#03C;
+}
+/*  Chữ LVTN  */
+ .lv{
+ padding: 5px; 
+  margin: 5px;
+ text-align:center;
+ font-size:27px;
+ color:#006;
+}
+ /* Thuộc t nh của tên đề tài */ 
+.topic{
+ padding: 5px;
+ margin: 5px;
+ text-align:center;
+ font-size:24px;
+ color:#906;
+} 
+/*Define the character of image*/
+.img-logo{
+	width: 50px;
+	height: auto;
+}
+.infor{
+ padding: 20px;
+ margin: 10px;
+ text-align:left;
+ font-size:20px;
+}
+/* Login CSS */
+h2 {
+  height: 100px;
+  width: 100%;
+  font-size: 18px;
+  background: #18aa8d;
+  color: white;
+  border-radius: 3px 3px 0 0; /* o cạnh*/ 
+  box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.2) ;  /*Tạo bóng */ 
+}
+.login-content{ 
+  padding-top: 50px;
+}
+
+.navbar-right > li > form > input{
+  margin: 5px 5px 5px 5px;
+}
+
+.form-login {
+  box-sizing: border-box;
+  width: 300px;
+  margin: auto;
+  box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2) ;
+  padding-bottom: 50px;
+  border-radius: 5px;
+}
+form h2 {
+  box-sizing: border-box;
+  padding: 20px;
+  margin-top: 0; 
+}
+ /*Tạo hiệu ứng cho các ô input */ 
+input {
+  margin: 40px 25px;
+  width: 200px;
+  display: block;
+  border: none;
+  padding: 5px 0;
+  border-bottom: solid 1px #1abc9c;
+  transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+  color: #0e6252;
+}
+input:focus, input:valid {
+  box-shadow: none;
+  outline: none;
+  background-position: 0 0;
+}
+  /* Tạo hiệu ứng cho button submit*/
+form button {
+  border: none;
+  background: #1abc9c;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 6px;
+  width: 200px;
+  color: white;
+  margin-left: 25px;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
+} 
+.footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  background-color: #efefef;
+  text-align: center;
+}
+
+label {
+margin: 10px 25px;
+color: #B4886B;
+font-weight: bold;
+display: block;
+width: 150px;
+float: left;
+}
+label:after { content: ": " }
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+.container{
+  width: 100% !important;
+}
